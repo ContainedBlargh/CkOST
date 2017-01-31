@@ -1,0 +1,13 @@
+B:\Source\CkOSTranspiler\CkOSTranspiler\obj\Debug\CkOSTranspiler.fsproj.CkOSTranspiler.exe.config
+B:\Source\CkOSTranspiler\CkOSTranspiler\bin\Debug\CkOSTranspiler.exe.config
+B:\Source\CkOSTranspiler\CkOSTranspiler\bin\Debug\CkOSTranspiler.XML
+B:\Source\CkOSTranspiler\CkOSTranspiler\bin\Debug\CkOSTranspiler.exe
+B:\Source\CkOSTranspiler\CkOSTranspiler\bin\Debug\CkOSTranspiler.pdb
+B:\Source\CkOSTranspiler\CkOSTranspiler\bin\Debug\FSharp.Core.dll
+B:\Source\CkOSTranspiler\CkOSTranspiler\bin\Debug\FsLexYacc.Runtime.dll
+B:\Source\CkOSTranspiler\CkOSTranspiler\bin\Debug\FSharp.Core.xml
+B:\Source\CkOSTranspiler\CkOSTranspiler\bin\Debug\FsLexYacc.Runtime.xml
+B:\Source\CkOSTranspiler\CkOSTranspiler\obj\Debug\CkOSTranspiler.exe
+B:\Source\CkOSTranspiler\CkOSTranspiler\obj\Debug\CkOSTranspiler.pdb
+B:\Source\CkOSTranspiler\CkOSTranspiler\bin\Debug\helloworld.CkOS
+B:\Source\CkOSTranspiler\CkOSTranspiler\bin\Debug\looper.CkOS

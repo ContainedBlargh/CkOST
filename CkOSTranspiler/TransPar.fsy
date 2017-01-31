@@ -1,0 +1,202 @@
+﻿%{
+open Absyn
+let trd (_, _, c) = c
+
+let ll leftie =
+  let left = fst leftie
+  fst left
+
+let lr leftie =
+  let left = fst leftie
+  snd left
+%}
+
+%token <int> CSTINT
+%token <float> CSTFLOAT
+%token <bool> CSTBOOL
+%token <string> CSTSTRING NAME
+
+%token CHAR IF ELSE BREAK DO WHILE LOCK UNLOCK FOR IN WAIT WHEN THEN VAR FUN
+%token ON PRESERVE STRUCT RETURN PRINT
+%token INC DEC
+%token PLUS MINUS TIMES DIV MOD
+%token EQ NE GT LT GE LE
+%token NOT SEQOR SEQAND
+%token LPAR RPAR LBRACE RBRACE LBRACK RBRACK SEMI COMMA ASSIGN AMP DOT
+%token DEL
+%token EOF
+%token LOCAL GLOBAL
+
+%right ASSIGN
+%nonassoc PRINT
+%left SEQOR
+%left SEQAND
+%left EQ NE
+%nonassoc GT LT GE LE
+%left PLUS MINUS
+%left TIMES DIV MOD
+%nonassoc NOT
+%nonassoc LBRACK
+
+%start Main
+%type <Absyn.program> Main
+
+%%
+
+Main:
+  Topdecs EOF                                   { Prog $1 }
+;
+
+Topdecs:
+    /* empty */							                    { [] }
+  | Topdec Topdecs						                  { $1 :: $2 }
+;
+
+Proximity:
+    LOCAL                                       { Local }
+  | GLOBAL                                      { Global }
+;
+
+Vardec:
+    Proximity VAR NAME                          { ($1, $3) }
+  | VAR NAME                                    { (Local, $2) }
+  | LPAR Vardec RPAR                            { $2 }
+;
+
+Vardesc:
+  | Vardec ASSIGN Expr                          { ($1,$3) }
+;
+
+Topdec:
+    Vardesc SEMI                                { Vardec (ll $1, lr $1, snd $1) }
+  | Fundec								                      { $1 }
+  | ExprSeq                                     { ExprSeq($1) }
+;
+
+Fundec:
+  | Proximity FUN NAME LPAR Params RPAR Block   { Fundec($1,$3,$5,$7) }
+;
+
+Params:
+    /*empty*/   					                      { [] }
+  | Params1								                      { $1 }
+;
+
+Params1:
+    NAME								                        { [$1] }
+  | NAME COMMA Params1					                { $1 :: $3 }
+;
+
+Block:
+    LBRACE StmtSeq RBRACE			                  { Block $2 }
+;
+
+Dec:
+    Vardesc                                     { Dec(ll $1, lr $1, snd $1) }
+;
+
+StmtSeq:
+    /*empty*/						                        { [] }
+  | Stmt StmtSeq						                    { Stmt $1 :: $2 }
+  | Dec SEMI StmtSeq                            { ($1)::$3 }
+;
+
+Stmt: 
+    StmtM                                       { $1 }
+  | StmtU                                       { $1 }
+;
+
+StmtM:
+  | IF LPAR Expr RPAR StmtM ELSE StmtM          { If($3, $5, $7) }
+  | BREAK SEMI							                    { Break }
+  | Block								                        { $1 }
+  | DO Block WHILE LPAR Expr RPAR SEMI          { DoWhile($2, $5) }
+  | WHILE Expr DO Block					                { While($2, $4) }
+  | LOCK NAME ASSIGN Expr SEMI			            { Lock($2, $4) }
+  | UNLOCK NAME	SEMI					                  { Unlock($2) }
+  | FOR LPAR NAME IN NAME RPAR Block	          { ForIn($3, $5, $7) }
+  | FOR LPAR Dec SEMI Expr SEMI Stmt RPAR Block   { For($3, $5, $7, $9) }
+  | WAIT Expr SEMI						                  { Wait($2) }
+  | WHEN Expr THEN Block				                { WhenThen($2, $4) }
+  | ON Expr Block						                    { On($2, $3) }
+  | PRESERVE SEMI						                    { Preserve }
+  | RETURN Expr SEMI					                  { Return(Some($2)) }
+  | RETURN SEMI							                    { Return None }
+  | PRINT Expr SEMI						                  { Print $2 }
+  | VarAssign							                      { $1 }
+  | StructAssign                                { $1 }
+  | Expr SEMI							                      { Expr($1) }
+;
+
+VarAssign:
+    VAR NAME ASSIGN Expr SEMI		                { AssignVar($2, $4) }
+;
+
+StructAssign:
+    NAME DOT NAME ASSIGN Expr SEMI              { AssignMember($1, $3, $5) }
+;
+
+StmtU:
+    IF LPAR Expr RPAR StmtM ELSE StmtU          { If($3, $5, $7) }
+  | IF LPAR Expr RPAR Stmt			                { If($3, $5, Block []) }
+;
+
+ExprSeq:
+    /*Empty*/                                   { [] }
+  | Expr SEMI ExprSeq                           { $1::$3 }
+;
+
+Expr:
+    Access							                        { Access($1) }
+  | ExprNotAccess					                      { $1 }
+;
+
+Access:
+    NAME DOT NAME				          	            { AccMem($1, $3) }
+  | NAME DEL            						            { AccFun($1) }
+  | NAME	                                      { AccVar($1) } 
+  | LPAR Access RPAR                            { $2 }		
+  | Access LBRACK Expr RBRACK					          { AccIndex($1, $3) }
+;
+
+ExprNotAccess:
+    AtExprNotAccess                             { $1 }
+  | NAME LPAR Exprs RPAR                        { Call($1, $3) }
+  | INC Access                                  { PreInc($2) }
+  | Access INC                                  { PostInc($1) }
+  | DEC Access                                  { PreDec($2) }
+  | Access DEC                                  { PostDec($1) }
+  | NOT Expr                                    { Prim1("!", $2) }
+  | Expr PLUS  Expr                             { Prim2("+",  $1, $3) }
+  | Expr MINUS Expr                             { Prim2("-",  $1, $3) }
+  | Expr TIMES Expr                             { Prim2("*",  $1, $3) }
+  | Expr DIV   Expr                             { Prim2("/",  $1, $3) }
+  | Expr MOD   Expr                             { Prim2("%",  $1, $3) }
+  | Expr EQ    Expr                             { Prim2("==", $1, $3) }
+  | Expr NE    Expr                             { Prim2("!=", $1, $3) }
+  | Expr GT    Expr                             { Prim2(">",  $1, $3) }
+  | Expr LT    Expr                             { Prim2("<",  $1, $3) }
+  | Expr GE    Expr                             { Prim2(">=", $1, $3) }
+  | Expr LE    Expr                             { Prim2("<=", $1, $3) }
+  | Expr SEQAND Expr                            { Andalso($1, $3)     }
+  | Expr SEQOR  Expr                            { Orelse($1, $3)      }
+;
+
+AtExprNotAccess:
+    CSTINT                                      { CstN(float $1) }
+  | MINUS CSTINT                                { CstN(float (-$2)) }
+  | CSTFLOAT                                    { CstN($1) }
+  | CSTBOOL                                     { CstB($1) }
+  | CSTSTRING                                   { CstS($1) }
+  | LPAR AtExprNotAccess RPAR                   { $2 }
+;
+
+Exprs:
+    /* empty */                                 { []       }
+  | Exprs1                                      { $1       }
+;
+
+Exprs1:
+    Expr                                        { [$1]     }
+  | Expr COMMA Exprs1                           { $1 :: $3 }
+;
