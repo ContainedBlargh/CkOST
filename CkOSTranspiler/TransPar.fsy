@@ -53,13 +53,13 @@ Topdecs:
 ;
 
 Proximity:
-    LOCAL                                       { Local }
+    /* empty */                                 { Local }
+  | LOCAL                                       { Local }
   | GLOBAL                                      { Global }
 ;
 
 Vardec:
     Proximity VAR NAME                          { ($1, $3) }
-  | VAR NAME                                    { (Local, $2) }
   | LPAR Vardec RPAR                            { $2 }
 ;
 
@@ -115,7 +115,7 @@ StmtM:
   | LOCK NAME ASSIGN Expr SEMI			            { Lock($2, $4) }
   | UNLOCK NAME	SEMI					                  { Unlock($2) }
   | FOR LPAR NAME IN NAME RPAR Block	          { ForIn($3, $5, $7) }
-  | FOR LPAR Dec SEMI Expr SEMI Stmt RPAR Block   { For($3, $5, $7, $9) }
+  | FOR LPAR Dec SEMI Expr SEMI VarAssign RPAR Block { For($3, $5, $7, $9) }
   | WAIT Expr SEMI						                  { Wait($2) }
   | WHEN Expr THEN Block				                { WhenThen($2, $4) }
   | ON Expr Block						                    { On($2, $3) }
@@ -123,13 +123,13 @@ StmtM:
   | RETURN Expr SEMI					                  { Return(Some($2)) }
   | RETURN SEMI							                    { Return None }
   | PRINT Expr SEMI						                  { Print $2 }
-  | VarAssign							                      { $1 }
+  | VarAssign	SEMI				                      { $1 }
   | StructAssign                                { $1 }
   | Expr SEMI							                      { Expr($1) }
 ;
 
 VarAssign:
-    VAR NAME ASSIGN Expr SEMI		                { AssignVar($2, $4) }
+    NAME ASSIGN Expr                            { AssignVar($1, $3) }
 ;
 
 StructAssign:

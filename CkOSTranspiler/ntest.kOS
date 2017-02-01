@@ -1,0 +1,4 @@
+DECLARE GLOBAL n TO "Bananer".
+PRINT n. 
+DECLARE GLOBAL FUNCTION x { PARAMETER a.   PRINT s..   }
+x(n). 

@@ -1,0 +1,6 @@
+﻿global var n = "Bananer";
+print(n);
+global fun x (s){
+    print(s);
+}
+x(n);

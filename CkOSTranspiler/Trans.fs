@@ -119,9 +119,9 @@ and tranExprSeq exprs acc =
 let rec tranTopdec (decs : topdec list) pile = 
   match decs with
   | [] -> pile
-  | Vardec(prox, name, expr)::xs -> tranTopdec xs (pile + tranVardec prox name expr)
-  | Fundec(proximity, name, parameters, body)::xs -> tranTopdec xs (pile + (tranFundec proximity name parameters body))
-  | ExprSeq(exprs)::xs -> tranTopdec xs (pile + (tranExprSeq exprs String.Empty))
+  | Vardec(prox, name, expr)::xs -> tranTopdec xs (pile + (tranVardec prox name expr) + "\n")
+  | Fundec(proximity, name, parameters, body)::xs -> tranTopdec xs (pile + (tranFundec proximity name parameters body) + "\n")
+  | ExprSeq(exprs)::xs -> tranTopdec xs (pile + (tranExprSeq exprs String.Empty) + "\n")
 
 let transpile (prog : program) =   
   match prog with

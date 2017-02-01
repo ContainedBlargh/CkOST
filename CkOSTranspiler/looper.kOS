@@ -1,0 +1,3 @@
+DECLARE LOCAL FUNCTION loop {   FROM   DECLARE LOCAL a TO 10.   UNTIL a >= 20 STEP   SET a TO a + 1.   DO   PRINT "value of a: %d
+"..  .   }
+loop(). 
