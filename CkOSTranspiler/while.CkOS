@@ -1,0 +1,5 @@
+var x = 10;
+while (x > 0) do{
+    var toPrint = "x is currently: " + x + ".";
+    x--;
+}

@@ -85,6 +85,7 @@
     <None Include="ntest.CkOS">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="while.CkOS" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
