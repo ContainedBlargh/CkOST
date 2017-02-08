@@ -104,7 +104,7 @@ and tranFor init check step block =
                  | _ -> failwith "For initializer must be a declaration."
   let (check, step) = forCheckStep check step
   let block = tranStmt block
-  "FROM { " + iterator + " } UNTIL " + check + " STEP { " + step + " } DO " + block
+  "FROM { " + iterator + " } UNTIL " + check + ". STEP { " + step + " } DO " + block
 and tranFunBody body =
   String.map (fun x -> if x = '{' || x = '}' then ' ' else x) (tranStmt body)
 and tranFundec proximity name parameters body =

@@ -1,0 +1,89 @@
+//Quizzingly cunning red fox jumped over the lazy dog
+
+global var text = "Hello, world!";
+local var localtext = "Buenos dias, mundo!";
+var alttext = "Goodbye, world!";
+
+var list = list("a", "b", "c");
+var a = list[1];
+
+myCraft = SHIP;
+
+myCraft.myMass = SHIP.MASS;
+
+var number = 1.1;
+var string = "1.1";
+var bool = (3 > 1.1);
+bool = false;
+print("asdafasd");
+var four = 2+2;
+
+if(3 > 2){
+    print("Three is bigger than two");
+}
+
+if(4 < 2){
+    //...
+} else {
+    print("Either 4 is smaller than 2 or this statement is printed.");
+}
+
+if (false){
+
+} else if (false){
+
+} else {
+    print("Only truth there is.");
+}
+print("Should print 5: ");
+print(++four);
+print("Should print 4: ");
+print(--four);
+
+print("Should print 5: ");
+print(four++);
+print("Should print 4: ");
+print(four--);
+
+var iterator = 0;
+
+when(iterator == 2){
+    print("iterator reached 2.");
+    preserve;
+}
+
+do {
+    print("lo");
+    iterator++;
+} while (iterator < 10);
+
+
+while(iterator > 0){
+    print("rofl");
+    iterator--;
+}
+
+var bananas = list("Big and yellow", "Small and brown");
+
+for ( var banana in bananas ){
+    print(banana);
+}
+
+for(var i; i < 10; i++){
+    print(i);
+}
+
+fun printIt (something){
+    print(something);
+}
+
+printIt("I made a function!");
+
+fun get10(){
+    return 10;
+}
+
+var x = get10();
+print("tried getting 10: ")
+print(x);
+
